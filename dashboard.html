@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PathStudy - Painel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- AQUI ESTÁ A CORREÇÃO: Usando a tag semântica <header> -->
+    <header class="dash-top">
+        <h1 class="dash-logo">PathStudy</h1>
+        <div class="green-line"></div>
+        <div class="dash-header">
+            <span class="welcome">Bem vindo [usuário]!</span>
+            <div class="search-bar">
+                <input type="text" placeholder="Pesquisar">
+            </div>
+           <div class="dropdown">
+          <!-- O ícone que fica visível -->
+          <div class="menu-icon">☰</div>
+
+          <!-- A caixinha escondida que vai aparecer -->
+          <div class="conteudo-dropdown">
+            <a href="index.html">Início</a>
+            <a href="dashboard.html">Painel</a>
+            <a href="grupos.html">Grupos</a>
+            <a href="contato.html">Contato</a>
+            <a href="login.html">Sair</a>
+          </div>
+        </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="blue-wave"></div>
+        
+        <section>
+            <h3 class="title-center">Mais procurados:</h3>
+            <div class="carousel">
+                <span class="arrow">←</span>
+                <div class="card blue-card"></div>
+                <div class="card blue-card"></div>
+                <div class="card blue-card"></div>
+                <div class="card blue-card"></div>
+                <span class="arrow">→</span>
+            </div>
+        </section>
+
+        <div class="blue-wave"></div>
+        
+        <section>
+            <h3 class="title-left">Cursos Recentes ➔</h3>
+            <div class="carousel carousel-left">
+                <div class="card dark-card"></div>
+                <div class="card dark-card"></div>
+                <div class="card dark-card"></div>
+                <div class="card dark-card"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bottom-bar">
+        <p>© 2026 Tomin & Metring</p>
+    </footer>
+</body>
+</html>
