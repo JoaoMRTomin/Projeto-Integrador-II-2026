@@ -25,7 +25,7 @@
             <a href="dashboard.html">Painel</a>
             <a href="grupos.html">Grupos</a>
             <a href="contato.html">Contato</a>
-            <a href="login.html">Sair</a>
+            <a href="#" id="link-sair">Sair</a>
           </div>
         </div>
       </div>
@@ -62,7 +62,6 @@
     <footer class="bottom-bar">
       <p>© 2026 Tomin & Metring</p>
     </footer>
-    
     <!-- JS pro "bem vindo"-->
     <script>
       document.addEventListener("DOMContentLoaded", () => {
@@ -81,6 +80,39 @@
           window.location.href = "login.html";
         }
       });
+
+      /* LOGOUT*/
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Lógica para carregar o nome do usuário (que já fizemos)
+            const dadosUsuario = localStorage.getItem('usuarioLogado');
+
+            if (dadosUsuario) {
+                const usuario = JSON.parse(dadosUsuario);
+                const primeiroNome = usuario.nome.split(' ')[0];
+                const spanWelcome = document.querySelector('#nome-usuario');
+                if (spanWelcome) {
+                    spanWelcome.textContent = `Bem-vindo, ${primeiroNome}!`;
+                }
+            } else {
+                // Se não estiver logado, expulsa para o login
+                window.location.href = 'login.html';
+            }
+
+            // 2. Lógica nova para o botão de SAIR do menu
+            const linkSair = document.querySelector('#link-sair');
+            if (linkSair) {
+                linkSair.addEventListener('click', (e) => {
+                    e.preventDefault(); // Impede o link de seguir o '#' vazio
+                    
+                    // Apaga os dados do usuário do navegador
+                    localStorage.removeItem('usuarioLogado');
+                    
+                    // Redireciona para a página inicial (index.html)
+                    window.location.href = 'index.html';
+                });
+            }
+        });
     </script>
   </body>
 </html>

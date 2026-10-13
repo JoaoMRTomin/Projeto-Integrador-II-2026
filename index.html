@@ -1,38 +1,94 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PathStudy - Início</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <header class="top-bar">
-        <h1 class="logo">PathStudy</h1>
-        <nav>
-            <a href="contato.html">Contato</a>
-            <a href="#">Saiba Mais</a>
-        </nav>
+      <h1 class="logo">PathStudy</h1>
+      <nav>
+        <a href="contato.html">Contato</a>
+        <a href="#">Saiba Mais</a>
+      </nav>
     </header>
 
     <main class="home-container">
-        <div class="left-content">
-            <h2>20% do seu esforço, para 80% de resultados.</h2>
-            <p>Estude de maneira eficiente para seus concursos</p>
-            <img src="imagens/bonequinho estudando.png" alt="Boneco lendo livro" class="bonequin-img"> 
+      <div class="left-content">
+        <h2>20% do seu esforço, para 80% de resultados.</h2>
+        <p>Estude de maneira eficiente para seus concursos</p>
+        <img
+          src="imagens/bonequinho estudando.png"
+          alt="Boneco lendo livro"
+          class="bonequin-img"
+        />
+      </div>
+
+      <div class="right-content">
+        <blockquote class="quote">
+          "Sucesso é o acúmulo de pequenos esforços, repetidos dia e noite."
+          <cite>- José Tomin</cite>
+        </blockquote>
+
+        <!-- Agrupamos os botões para ficarem lado a lado -->
+        <div style="display: flex; gap: 10px; align-items: center">
+          <a href="login.html" id="btn-comecar" class="btn">Comece agora</a>
+
+          <!-- Botão de Sair (inicialmente escondido com a classe hidden) -->
+          <a
+            href="#"
+            id="btn-sair"
+            class="btn hidden"
+            style="
+              color: #ef4444;
+              font-style: italic;
+              background-color: white;
+              text-decoration: underline red;
+              font-size: medium;
+            "
+            >Sair</a
+          >
         </div>
-        
-        <div class="right-content">
-            <blockquote class="quote">
-                "Sucesso é o acúmulo de pequenos esforços, repetidos dia e noite."
-                <cite>- José Tomin</cite>
-            </blockquote>
-            <a href="login.html" class="btn">Comece agora</a>
-        </div>
+      </div>
     </main>
 
     <footer class="bottom-bar">
-        <p>© 2026 Tomin & Metring</p>
+      <p>© 2026 Tomin & Metring</p>
     </footer>
-</body>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const dadosUsuario = localStorage.getItem("usuarioLogado");
+        const botaoComecar = document.querySelector("#btn-comecar");
+        const botaoSair = document.querySelector("#btn-sair");
+
+        // Se o usuário estiver logado
+        if (dadosUsuario) {
+          // 1. Transforma o botão de início no link para o painel
+          if (botaoComecar) {
+            botaoComecar.href = "dashboard.html";
+            botaoComecar.textContent = "Ir para o painel";
+          }
+
+          // 2. Mostra o botão de Sair removendo a classe 'hidden'
+          if (botaoSair) {
+            botaoSair.classList.remove("hidden");
+
+            // 3. Adiciona a ação de clique para deslogar
+            botaoSair.addEventListener("click", (e) => {
+              e.preventDefault(); // Impede o link de recarregar vazio
+
+              // Limpa os dados do usuário do navegador
+              localStorage.removeItem("usuarioLogado");
+
+              // Recarrega a página para atualizar o visual para "deslogado"
+              window.location.reload();
+            });
+          }
+        }
+      });
+    </script>
+  </body>
 </html>
