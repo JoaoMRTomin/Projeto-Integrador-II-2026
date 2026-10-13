@@ -1,26 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PathStudy - Painel</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <!-- AQUI ESTÁ A CORREÇÃO: Usando a tag semântica <header> -->
     <header class="dash-top">
-        <h1 class="dash-logo">PathStudy</h1>
-        <div class="green-line"></div>
-        <div class="dash-header">
-            <span class="welcome">Bem vindo [usuário]!</span>
-            <div class="search-bar">
-                <input type="text" placeholder="Pesquisar">
-            </div>
-           <div class="dropdown">
-          <!-- O ícone que fica visível -->
-          <div class="menu-icon">☰</div>
+      <h1 class="dash-logo">PathStudy</h1>
+      <div class="green-line"></div>
+      <div class="dash-header">
+        <!-- Adicionamos o id aqui para o JS encontrar -->
+        <span class="welcome" id="nome-usuario">Bem-vindo!</span>
 
-          <!-- A caixinha escondida que vai aparecer -->
+        <div class="search-bar">
+          <input type="text" placeholder="Pesquisar" />
+        </div>
+        <div class="dropdown">
+          <div class="menu-icon">☰</div>
           <div class="conteudo-dropdown">
             <a href="index.html">Início</a>
             <a href="dashboard.html">Painel</a>
@@ -29,39 +28,59 @@
             <a href="login.html">Sair</a>
           </div>
         </div>
-        </div>
+      </div>
     </header>
 
     <main class="dashboard-main">
-        <div class="blue-wave"></div>
-        
-        <section>
-            <h3 class="title-center">Mais procurados:</h3>
-            <div class="carousel">
-                <span class="arrow">←</span>
-                <div class="card blue-card"></div>
-                <div class="card blue-card"></div>
-                <div class="card blue-card"></div>
-                <div class="card blue-card"></div>
-                <span class="arrow">→</span>
-            </div>
-        </section>
+      <div class="blue-wave"></div>
 
-        <div class="blue-wave"></div>
-        
-        <section>
-            <h3 class="title-left">Cursos Recentes ➔</h3>
-            <div class="carousel carousel-left">
-                <div class="card dark-card"></div>
-                <div class="card dark-card"></div>
-                <div class="card dark-card"></div>
-                <div class="card dark-card"></div>
-            </div>
-        </section>
+      <section>
+        <h3 class="title-center">Mais procurados:</h3>
+        <div class="carousel">
+          <span class="arrow">←</span>
+          <div class="card blue-card"></div>
+          <div class="card blue-card"></div>
+          <div class="card blue-card"></div>
+          <div class="card blue-card"></div>
+          <span class="arrow">→</span>
+        </div>
+      </section>
+
+      <div class="blue-wave"></div>
+
+      <section>
+        <h3 class="title-left">Cursos Recentes ➔</h3>
+        <div class="carousel carousel-left">
+          <div class="card dark-card"></div>
+          <div class="card dark-card"></div>
+          <div class="card dark-card"></div>
+          <div class="card dark-card"></div>
+        </div>
+      </section>
     </main>
 
     <footer class="bottom-bar">
-        <p>© 2026 Tomin & Metring</p>
+      <p>© 2026 Tomin & Metring</p>
     </footer>
-</body>
+    
+    <!-- JS pro "bem vindo"-->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Pega os dados salvos no navegador no momento do login/cadastro
+        const dadosUsuario = localStorage.getItem("usuarioLogado");
+
+        if (dadosUsuario) {
+          // Transforma o texto JSON salvo de volta em um objeto do JavaScript
+          const usuario = JSON.parse(dadosUsuario);
+
+          // Encontra o span do welcome e altera o texto para incluir o nome
+          const spanWelcome = document.querySelector("#nome-usuario");
+          spanWelcome.textContent = `Bem-vindo, ${usuario.nome}!`;
+        } else {
+          // Se alguém tentar entrar no painel digitando a URL sem logar, manda de volta pro login
+          window.location.href = "login.html";
+        }
+      });
+    </script>
+  </body>
 </html>

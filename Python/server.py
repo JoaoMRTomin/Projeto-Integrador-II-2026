@@ -5,62 +5,64 @@ import mysql.connector
 # Inicializa a aplicação Flask
 app = Flask(__name__)
 
-# Libera o acesso para o seu JS no navegador fazer requisições fetch
+# Libera o acesso para o JavaScript no navegador fazer requisições fetch
 CORS(app)
 
 # Configuração de conexão com o banco MySQL
 def conectar_banco():
-    return mysql.connector.connect(
-        host='localhost',
-        user='root',          # Seu usuário do MySQL
-        password='josetomin',          # Sua senha do MySQL (deixe vazia se não tiver)
-        database='pathstudy'  # Nome do seu banco de dados
-    )
+    try:
+        return mysql.connector.connect(
+            host='127.0.0.1',     # Usar 127.0.0.1 evita problemas de IPv6 no Windows
+            user='root',          # O teu utilizador do MySQL
+            password='josetomin', # A tua palavra-passe do MySQL
+            database='pathstudy'  # Nome da base de dados
+        )
+    except mysql.connector.Error as err:
+        print(f"\n[ERRO DE LIGAÇÃO AO MYSQL]: {err}\n")
+        return None
 
-# ROTA DE LOGIN (Atende ao fetch('.../api/login'))
+# ============================================================
+# ROTA DE LOGIN
+# ============================================================
 @app.route('/api/login', methods=['POST'])
 def login():
-    # 1. Pega os dados enviados no JSON pelo JS (email e senha)
     dados = request.get_json()
     email = dados.get('email')
     senha = dados.get('senha')
 
-    # --- LINHAS DE TESTE (Aparecerão no terminal do VS Code) ---
-    print("\n========================================")
-    print(f" [LOGIN] E-mail recebido do site: {email}")
-    print("========================================\n")
-
-    # ... restante do código do banco de dados ...
-
-    # 2. Conecta ao MySQL e cria o cursor para rodar comandos
     conn = conectar_banco()
-    cursor = conn.cursor(dictionary=True) # dictionary=True traz o resultado como chave:valor
+    if not conn:
+        return jsonify({'mensagem': 'Erro crítico ao ligar à base de dados.'}), 500
 
-    # 3. Executa a busca segura no banco (%s evita ataques de SQL Injection)
-    cursor.execute('SELECT * FROM usuarios WHERE email = %s', (email,))
-    usuario = cursor.fetchone() # Pega o primeiro registro encontrado
+    cursor = conn.cursor(dictionary=True)
+    
+    try:
+        cursor.execute('SELECT * FROM usuarios WHERE email = %s', (email,))
+        usuario = cursor.fetchone()
 
-    # 4. Fecha a conexão com o banco
-    cursor.close()
-    conn.close()
+        if not usuario:
+            return jsonify({'mensagem': 'E-mail não cadastrado.'}), 404
 
-    # 5. Validações
-    if not usuario:
-        return jsonify({'mensagem': 'E-mail não cadastrado.'}), 404
+        if usuario['senha'] != senha:
+            return jsonify({'mensagem': 'Senha incorreta.'}), 401
 
-    if usuario['senha'] != senha: # Futuramente aqui usaremos criptografia
-        return jsonify({'mensagem': 'Senha incorreta.'}), 401
+        return jsonify({
+            'mensagem': 'Login realizado com sucesso!',
+            'usuario': {
+                'id': usuario['id_usuario'],
+                'nome': usuario['nome']
+            }
+        }), 200
 
-    # 6. Sucesso: envia os dados do usuário de volta para o JS
-    return jsonify({
-        'mensagem': 'Login realizado com sucesso!',
-        'usuario': {
-            'id': usuario['id_usuario'],
-            'nome': usuario['nome']
-        }
-    }), 200
+    except mysql.connector.Error as err:
+        return jsonify({'mensagem': f'Erro na consulta: {err}'}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
-# ROTA DE CADASTRO (Atende ao fetch('.../api/cadastro'))
+# ============================================================
+# ROTA DE CADASTRO
+# ============================================================
 @app.route('/api/cadastro', methods=['POST'])
 def cadastro():
     dados = request.get_json()
@@ -69,24 +71,40 @@ def cadastro():
     senha = dados.get('senha')
 
     conn = conectar_banco()
+    if not conn:
+        return jsonify({'mensagem': 'Erro crítico ao ligar à base de dados.'}), 500
+
     cursor = conn.cursor(dictionary=True)
 
-    # Verifica se o e-mail já existe no banco
-    cursor.execute('SELECT id_usuario FROM usuarios WHERE email = %s', (email,))
-    if cursor.fetchone():
+    try:
+        # 1. Verifica se o e-mail já existe
+        cursor.execute('SELECT id_usuario FROM usuarios WHERE email = %s', (email,))
+        if cursor.fetchone():
+            return jsonify({'mensagem': 'Este e-mail já está em uso.'}), 400
+
+        # 2. Insere o novo utilizador
+        sql = 'INSERT INTO usuarios (nome, email, senha) VALUES (%s, %s, %s)'
+        cursor.execute(sql, (nome, email, senha))
+        conn.commit()
+
+        # 3. Descobre o ID gerado automaticamente para este novo registo
+        novo_id = cursor.lastrowid
+
+        # 4. Retorna a mensagem E os dados do utilizador para o JavaScript guardar
+        return jsonify({
+            'mensagem': 'Conta criada com sucesso!',
+            'usuario': {
+                'id': novo_id,
+                'nome': nome,
+                'email': email
+            }
+        }), 201
+
+    except mysql.connector.Error as err:
+        return jsonify({'mensagem': f'Erro ao inserir dados: {err}'}), 500
+    finally:
         cursor.close()
         conn.close()
-        return jsonify({'mensagem': 'Este e-mail já está em uso.'}), 400
-
-    # Insere o novo usuário na tabela
-    sql = 'INSERT INTO usuarios (nome, email, senha) VALUES (%s, %s, %s)'
-    cursor.execute(sql, (nome, email, senha))
-    conn.commit() # Confirma a alteração no MySQL
-
-    cursor.close()
-    conn.close()
-
-    return jsonify({'mensagem': 'Conta criada com sucesso!'}), 201
 
 # Inicia o servidor na porta 3000
 if __name__ == '__main__':
