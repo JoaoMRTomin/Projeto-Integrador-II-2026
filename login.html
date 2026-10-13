@@ -1,42 +1,131 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PathStudy - Iniciar Sessão</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PathStudy - Autenticação</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="JavaScript/login.js" defer></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+  <body>
     <header class="top-bar">
-        <h1 class="logo">PathStudy</h1>
+      <h1 class="logo">PathStudy</h1>
     </header>
 
     <main class="login-container">
-        <div class="login-form">
-            <h2>Iniciar sessão agora!</h2>
-            
-            <div class="input-group">
-                <label for="email">E-mail</label>
-                <input type="email" id="email" placeholder="insira texto...">
-            </div>
-            
-            <div class="input-group">
-                <label for="senha">Senha</label>
-                <input type="password" id="senha" placeholder="insira texto...">
-            </div>
-            
-            <a href="#" class="forgot-pwd">esqueceu sua senha?</a>
-            <a href="dashboard.html" class="btn btn-block">Entrar</a>
-        </div>
-        
-        <div class="login-image">
-            <img src="imagens/reunião estudo.png" alt="Reunião 3D">
-            <p>Independente da pessoa que você é, após usar o PathStudy, você sairá como uma pessoa melhor.</p>
-        </div>
+      <div class="auth-wrapper">
+        <!-- FORMULÁRIO DE LOGIN -->
+        <form class="login-form" id="form-login">
+          <h2>Iniciar sessão agora!</h2>
+
+          <!-- Google login -->
+          <div class="google-container">
+            <div
+              id="g_id_onload"
+              data-client_id="133919350665-673tm2p493hceqvak9d2hm9a1c6ljvas.apps.googleusercontent.com"
+              data-callback="manipularRespostaGoogle"
+            ></div>
+
+            <div
+              class="g_id_signin"
+              data-type="standard"
+              data-size="large"
+              data-theme="outline"
+              data-width="100%"
+            ></div>
+          </div>
+          <!-- fim do google -->
+          <div class="divider"><span>ou com e-mail</span></div>
+
+          <div class="input-group">
+            <label for="email">E-mail</label>
+            <input
+              type="email"
+              id="login-email"
+              placeholder="insira o seu e-mail..."
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <label for="senha">Senha</label>
+            <input
+              type="password"
+              id="login-senha"
+              placeholder="insira a sua senha..."
+              required
+            />
+          </div>
+
+          <p id="mensagemErro" class="error-msg"></p>
+
+          <a href="#" class="forgot-pwd">esqueceu a sua senha?</a>
+
+          <button type="submit" class="btn btn-block">Entrar</button>
+
+          <p class="toggle-text">
+            Não tem uma conta? <a href="#" id="linkIrCadastro">Cadastre-se</a>
+          </p>
+        </form>
+
+        <!-- FORMULÁRIO DE CADASTRO (oculto) -->
+        <form class="login-form hidden" id="form-cadastro">
+          <h2>Criar conta no PathStudy</h2>
+
+          <div class="input-group">
+            <label for="cadNome">Nome Completo</label>
+            <input
+              type="text"
+              id="cad-nome"
+              placeholder="insira o seu nome..."
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <label for="cadEmail">E-mail</label>
+            <input
+              type="email"
+              id="cad-email"
+              placeholder="insira o seu e-mail..."
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <label for="cadSenha">Senha</label>
+            <input
+              type="password"
+              id="cad-senha"
+              placeholder="crie uma senha segura..."
+              required
+            />
+          </div>
+
+          <p id="mensagemErroCadastro" class="error-msg"></p>
+
+          <button type="submit" class="btn btn-block">Cadastrar</button>
+
+          <p class="toggle-text">
+            Já tem uma conta? <a href="#" id="linkIrLogin">Iniciar sessão</a>
+          </p>
+        </form>
+      </div>
+
+      <div class="login-image">
+        <img src="imagens/reunião estudo.png" alt="Reunião 3D" />
+        <p>
+          Independente da pessoa que você é, após usar o PathStudy, você sairá
+          como uma pessoa melhor.
+          <!-- ENTRAR COMO ADM-->>
+          <a href="dashboard.html">ENTRAR ADM</a>
+        </p>
+      </div>
     </main>
 
     <footer class="bottom-bar">
-        <p>© 2026 Tomin & Metring</p>
+      <p>© 2026 Tomin & Metring</p>
     </footer>
-</body>
+  </body>
 </html>
