@@ -134,11 +134,11 @@ body {
   padding: 2px 40px;
 }
 
-.top-bar-login{
-display: flex;
-justify-content: center;
- border-bottom: 1px solid #d6d3d3;
- padding: 10px 0 10px 0;
+.top-bar-login {
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid #d6d3d3;
+  padding: 10px 0 10px 0;
 }
 
 .logo {
@@ -149,18 +149,16 @@ justify-content: center;
 }
 
 .top-bar nav a {
-   transition: color 0.5s ease;
+  transition: color 0.5s ease;
   margin-left: 30px;
   text-decoration: none;
   color: #333;
   font-size: 16px;
 }
 
-nav a:hover{
-  color:#0b76ff;
+nav a:hover {
+  color: #0b76ff;
 }
-
-
 
 .bottom-bar {
   background-color: #9bb1e5;
@@ -169,7 +167,6 @@ nav a:hover{
   margin-top: auto;
   color: white;
   font-weight: bold;
- 
 }
 
 /* Botões */
@@ -195,8 +192,6 @@ nav a:hover{
   width: 100%;
   margin-top: 15px;
 }
-
-
 
 /* --- PÁGINA 1: Home --- */
 .home-container {
@@ -524,10 +519,52 @@ nav a:hover{
   padding-bottom: 40px;
 }
 
+.carousel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    max-width: 1000px; /* Limita a largura total do carrossel na tela */
+    margin: 0 auto;
+}
+
+.arrow {
+    cursor: pointer;
+    font-size: 20px;
+    background: #e1e4e8;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+
+.arrow:hover {
+    background: #cbd3da;
+}
+
+#container-mais-procurados {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    flex-wrap: nowrap;
+    width: 100%;
+    scrollbar-width: none; /* Oculta a barra de rolagem no Firefox */
+}
+
+#container-mais-procurados::-webkit-scrollbar {
+    display: none; /* Oculta a barra de rolagem no Chrome/Edge */
+}
+
 .blue-wave {
-  background-color: #6984e3;
-  height: 20px;
-  border-radius: 50%;
+  background-color: #000000;
+  height: 15px;
+  border-radius: 10px;
   width: 95%;
   margin: 20px auto;
 }

@@ -18,6 +18,7 @@ CREATE TABLE videos (
 
 CREATE TABLE cursos (
     id_curso INT AUTO_INCREMENT PRIMARY KEY,
+    playlist_id VARCHAR(100) NOT NULL,
     titulo VARCHAR(150) NOT NULL,
     descricao TEXT,
     categoria VARCHAR(50)
@@ -32,22 +33,6 @@ CREATE TABLE curso_videos (
     FOREIGN KEY (id_video) REFERENCES videos (id_video) ON DELETE CASCADE
 );
 
-CREATE TABLE playlists (
-    id_playlist INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    titulo VARCHAR(100) NOT NULL,
-    descricao TEXT,
-    FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario) ON DELETE CASCADE
-);
-
-CREATE TABLE playlist_videos (
-    PRIMARY KEY (id_playlist, id_video),
-    id_playlist INT,
-    id_video INT,
-    ordem INT DEFAULT 1,
-    FOREIGN KEY (id_playlist) REFERENCES playlists (id_playlist) ON DELETE CASCADE,
-    FOREIGN KEY (id_video) REFERENCES videos (id_video) ON DELETE CASCADE
-);
 
 CREATE TABLE progresso_usuario (
     id_usuario INT,
@@ -60,3 +45,10 @@ CREATE TABLE progresso_usuario (
     FOREIGN KEY (id_video) REFERENCES videos(id_video) ON DELETE CASCADE
 );
 
+SELECT * from cursos;
+
+UPDATE cursos
+SET imagem = 'https://i.pinimg.com/736x/fd/0a/88/fd0a883bd6f2fa6607ebe58fd7d30e60.jpg'
+WHERE id_curso = 1;   
+INSERT INTO cursos (titulo, playlist_id, cliques, categoria) 
+VALUES ('Curso de Português', 'PLToTKj2C0mWDJowVTjT0FWL14dhXOVP9p', 0, 'Linguagens');

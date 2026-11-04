@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PathStudy - Ambiente de Estudos</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .aula-layout {
+            display: flex;
+            gap: 25px;
+            max-width: 1280px;
+            width: 100%;
+            margin: 30px auto;
+            padding: 0 20px;
+            flex: 1;
+        }
+
+        .video-area {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* Proporção 16:9 */
+            height: 0;
+            overflow: hidden;
+            width: 100%;
+            background-color: #000;
+            border-radius: 12px;
+            box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
+        }
+
+        #youtube-player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Barra Lateral Estilizada (Estilo Udemy/YouTube) */
+        .aula-sidebar {
+            flex: 1.2;
+            background: #ffffff;
+            border: 1px solid #e1e4e8;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
+            max-height: 550px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .playlist-items {
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-right: 5px;
+        }
+
+        .playlist-item {
+            display: flex;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            align-items: center;
+        }
+
+        .playlist-item:hover {
+            background: #f1f3f5;
+        }
+
+        .playlist-item.active {
+            background: #e6f4ea;
+            border-left: 4px solid #28a745;
+        }
+
+        .playlist-item img {
+            width: 90px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .playlist-item-info h4 {
+            font-size: 12px;
+            color: #333;
+            margin: 0;
+            display: -webkit-box;
+           
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        @media (max-width: 900px) {
+            .aula-layout {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="dash-top">
+        <h1 class="dash-logo">PathStudy</h1>
+        <div class="green-line"></div>
+        <div class="dash-header">
+            <a href="dashboard.html" class="btn" style="padding: 8px 16px; font-size: 13px;">← Voltar ao Painel</a>
+        </div>
+    </header>
+
+    <main class="aula-layout">
+        <!-- Coluna do Player -->
+        <div class="video-area">
+            <div class="video-container">
+                <div id="youtube-player"></div>
+            </div>
+        </div>
+
+        <!-- Barra Lateral com a Lista de Aulas -->
+        <aside class="aula-sidebar">
+            <h3 class="sidebar-title">Módulos da Playlist</h3>
+            <div id="lista-videos" class="playlist-items">
+                <p style="font-size: 13px; color: #666; text-align: center; margin-top: 20px;">A carregar aulas...</p>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="bottom-bar">
+        <p>© 2026 Tomin & Metring</p>
+    </footer>
+
+    <script>
+        let player;
+        let videoIds = []; // Guarda os IDs de cada vídeo da playlist
+        const urlParams = new URLSearchParams(window.location.search);
+        const playlistId = urlParams.get('list');
+        const storageKey = `pathstudy_progresso_${playlistId || 'geral'}`;
+        
+        // COLOCA A TUA CHAVE DE API DO YOUTUBE AQUI:
+        const API_KEY = 'AIzaSyCL47j93NKnuecuZlIeFurcxtg2hQTHsb4'; 
+
+        // Carrega a API do YouTube
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
+
+        window.onYouTubeIframeAPIReady = function() {
+            let savedIndex = parseInt(localStorage.getItem(storageKey)) || 0;
+
+            player = new YT.Player('youtube-player', {
+                height: '100%',
+                width: '100%',
+                playerVars: {
+                    'listType': 'playlist',
+                    'list': playlistId,
+                    'index': savedIndex,
+                    'autoplay': 0,
+                    'rel': 0
+                },
+                events: {
+                    'onReady': () => carregarDetalhesPlaylist(savedIndex),
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        };
+
+        // Faz o pedido à API do YouTube para buscar os títulos e miniaturas dos vídeos
+        async function carregarDetalhesPlaylist(currentIndex) {
+            if (!playlistId || API_KEY === 'TUA_API_KEY_AQUI') {
+                document.getElementById('lista-videos').innerHTML = '<p style="font-size:12px; color:red; padding:10px;">Configura a tua API_KEY do YouTube para ver a lista de aulas.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${API_KEY}`);
+                const data = await response.json();
+
+                const container = document.getElementById('lista-videos');
+                container.innerHTML = '';
+
+                data.items.forEach((item, index) => {
+                    const snippet = item.snippet;
+                    const videoId = snippet.resourceId.videoId;
+                    videoIds.push(videoId);
+
+                    const thumbnail = snippet.thumbnails.medium ? snippet.thumbnails.medium.url : '';
+                    const title = snippet.title;
+
+                    const card = document.createElement('div');
+                    card.className = `playlist-item ${index === currentIndex ? 'active' : ''}`;
+                    card.id = `video-card-${index}`;
+
+                    card.innerHTML = `
+                        <img src="${thumbnail}" alt="Miniatura">
+                        <div class="playlist-item-info">
+                            <h4>${index + 1}. ${title}</h4>
+                        </div>
+                    `;
+
+                    // Ao clicar num vídeo da barra lateral, muda o player para ele instantaneamente
+                    card.addEventListener('click', () => {
+                        player.playVideoAt(index);
+                        atualizarCardAtivo(index);
+                    });
+
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                console.error('Erro ao buscar vídeos da playlist:', err);
+            }
+        }
+
+        function onPlayerStateChange(event) {
+            if (player && typeof player.getPlaylistIndex === 'function') {
+                const currentIndex = player.getPlaylistIndex();
+                if (currentIndex >= 0) {
+                    localStorage.setItem(storageKey, currentIndex);
+                    atualizarCardAtivo(currentIndex);
+                }
+            }
+        }
+
+        // Destaca visualmente o vídeo que está a tocar na barra lateral
+        function atualizarCardAtivo(index) {
+            document.querySelectorAll('.playlist-item').forEach((el, idx) => {
+                if (idx === index) {
+                    el.classList.add('active');
+                    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

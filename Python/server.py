@@ -106,6 +106,61 @@ def cadastro():
         cursor.close()
         conn.close()
 
-# Inicia o servidor na porta 3000
+# ============================================================
+# ROTAS DE CURSOS E CLIQUES
+# ============================================================
+
+@app.route('/api/cursos/populares', methods=['GET'])
+def cursos_populares():
+    conn = conectar_banco()
+    if not conn:
+        return jsonify({'mensagem': 'Erro na base de dados'}), 500
+    
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute('SELECT * FROM cursos ORDER BY cliques DESC LIMIT 4')
+        cursos = cursor.fetchall()
+        return jsonify(cursos), 200
+    except Exception as e:
+        return jsonify({'mensagem': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/curso/<int:id_curso>/clique', methods=['POST'])
+def registrar_clique(id_curso):
+    conn = conectar_banco()
+    if not conn:
+        return jsonify({'mensagem': 'Erro na base de dados'}), 500
+        
+    cursor = conn.cursor()
+    try:
+        cursor.execute('UPDATE cursos SET cliques = cliques + 1 WHERE id = %s', (id_curso,))
+        conn.commit()
+        return jsonify({'mensagem': 'Clique computado com sucesso!'}), 200
+    except Exception as e:
+        return jsonify({'mensagem': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/cursos', methods=['GET'])
+def listar_cursos():
+    conn = conectar_banco()
+    if not conn:
+        return jsonify({'mensagem': 'Erro na base de dados'}), 500
+    
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute('SELECT * FROM cursos')
+        cursos = cursor.fetchall()
+        return jsonify(cursos), 200
+    except Exception as e:
+        return jsonify({'mensagem': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# Inicia o servidor na porta 5000 (ESTE DEVE SER SEMPRE O ÚLTIMO COMANDO)
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

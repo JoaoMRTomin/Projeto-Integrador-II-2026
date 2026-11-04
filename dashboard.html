@@ -7,12 +7,10 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- AQUI ESTÁ A CORREÇÃO: Usando a tag semântica <header> -->
     <header class="dash-top">
       <h1 class="dash-logo">PathStudy</h1>
       <div class="green-line"></div>
       <div class="dash-header">
-        <!-- Adicionamos o id aqui para o JS encontrar -->
         <span class="welcome" id="nome-usuario">Bem-vindo!</span>
 
         <div class="search-bar">
@@ -34,27 +32,47 @@
     <main class="dashboard-main">
       <div class="blue-wave"></div>
 
+      <!-- Seção Mais Procurados -->
       <section>
         <h3 class="title-center">Mais procurados:</h3>
         <div class="carousel">
           <span class="arrow">←</span>
-          <div class="card blue-card"></div>
-          <div class="card blue-card"></div>
-          <div class="card blue-card"></div>
-          <div class="card blue-card"></div>
+          <div
+            id="container-mais-procurados"
+            style="
+              display: flex;
+              gap: 20px;
+              overflow-x: auto;
+              flex-wrap: nowrap;
+              width: 100%;
+              padding-bottom: 10px;
+            "
+          >
+            <!-- Os cards entram aqui automaticamente via JS -->
+          </div>
           <span class="arrow">→</span>
         </div>
       </section>
 
       <div class="blue-wave"></div>
 
+      <!-- Secção Cursos Recentes (Histórico) -->
       <section>
         <h3 class="title-left">Cursos Recentes ➔</h3>
         <div class="carousel carousel-left">
-          <div class="card dark-card"></div>
-          <div class="card dark-card"></div>
-          <div class="card dark-card"></div>
-          <div class="card dark-card"></div>
+          <div
+            id="container-recentes"
+            style="
+              display: flex;
+              gap: 20px;
+              overflow-x: auto;
+              flex-wrap: nowrap;
+              width: 100%;
+              padding-bottom: 10px;
+            "
+          >
+            <!-- O histórico recente entra aqui automaticamente via JS -->
+          </div>
         </div>
       </section>
     </main>
@@ -62,57 +80,176 @@
     <footer class="bottom-bar">
       <p>© 2026 Tomin & Metring</p>
     </footer>
-    <!-- JS pro "bem vindo"-->
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        // Pega os dados salvos no navegador no momento do login/cadastro
+    <!-- JS pro "bem vindo" e Método de cliques-->
+ <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        // 1. Carrega o nome do usuário no topo e valida a sessão
         const dadosUsuario = localStorage.getItem("usuarioLogado");
+        const spanWelcome = document.querySelector("#nome-usuario");
 
         if (dadosUsuario) {
-          // Transforma o texto JSON salvo de volta em um objeto do JavaScript
-          const usuario = JSON.parse(dadosUsuario);
-
-          // Encontra o span do welcome e altera o texto para incluir o nome
-          const spanWelcome = document.querySelector("#nome-usuario");
-          spanWelcome.textContent = `Bem-vindo, ${usuario.nome}!`;
+            const usuario = JSON.parse(dadosUsuario);
+            const primeiroNome = usuario.nome.split(" ")[0];
+            if (spanWelcome) {
+                spanWelcome.textContent = `Bem-vindo, ${primeiroNome}!`;
+            }
         } else {
-          // Se alguém tentar entrar no painel digitando a URL sem logar, manda de volta pro login
-          window.location.href = "login.html";
+            window.location.href = "login.html";
+            return;
         }
-      });
 
-      /* LOGOUT*/
+        // Elementos principais do DOM
+        const containerMaisProcurados = document.getElementById("container-mais-procurados");
+        const containerRecentes = document.getElementById("container-recentes");
+        const inputPesquisa = document.querySelector('input[type="search"]');
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // 1. Lógica para carregar o nome do usuário (que já fizemos)
-            const dadosUsuario = localStorage.getItem('usuarioLogado');
+        let todosOsCursos = [];
 
-            if (dadosUsuario) {
-                const usuario = JSON.parse(dadosUsuario);
-                const primeiroNome = usuario.nome.split(' ')[0];
-                const spanWelcome = document.querySelector('#nome-usuario');
-                if (spanWelcome) {
-                    spanWelcome.textContent = `Bem-vindo, ${primeiroNome}!`;
-                }
+        // 2. Busca todos os cursos no backend Flask (Porta 5000)
+        try {
+            const response = await fetch("http://127.0.0.1:5000/api/cursos");
+            if (!response.ok) {
+                throw new Error("Erro ao buscar cursos na API");
+            }
+            todosOsCursos = await response.json();
+
+            if (todosOsCursos.length > 0) {
+                renderizarMaisProcurados(todosOsCursos);
+                renderizarHistoricoRecentes();
             } else {
-                // Se não estiver logado, expulsa para o login
-                window.location.href = 'login.html';
+                if (containerMaisProcurados) {
+                    containerMaisProcurados.innerHTML = '<p style="color: #777; font-size: 13px;">Nenhum curso cadastrado ainda.</p>';
+                }
+            }
+        } catch (error) {
+            console.error("Erro ao carregar cursos:", error);
+            if (containerMaisProcurados) {
+                containerMaisProcurados.innerHTML = '<p style="color: #ef4444; font-size: 13px;">Erro ao conectar com o servidor.</p>';
+            }
+        }
+
+        // --- FUNÇÃO AUXILIAR: CRIAR CARD DE CURSO ---
+        function criarCardCurso(curso) {
+            const card = document.createElement("div");
+            card.className = "card-curso";
+            card.style.cssText = "min-width: 220px; max-width: 220px; background: #222; color: #fff; border-radius: 8px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; flex-shrink: 0;";
+
+            const imgCapa = curso.imagem || "https://via.placeholder.com/220x120";
+            const cursoId = curso.id || curso.ID;
+
+            card.innerHTML = `
+                <img src="${imgCapa}" style="width: 100%; height: 120px; object-fit: cover;" alt="${curso.titulo}">
+                <div style="padding: 12px;">
+                    <h4 style="font-size: 14px; margin: 0 0 8px 0; color: #fff;">${curso.titulo}</h4>
+                    <span style="font-size: 11px; color: #28a745;">▶ Assistir ao curso</span>
+                </div>
+            `;
+
+            // Evento de clique: regista o clique no MySQL e guarda no histórico
+            card.addEventListener("click", async () => {
+                try {
+                    await fetch(`http://127.0.0.1:5000/api/curso/${cursoId}/clique`, {
+                        method: "POST",
+                    });
+                } catch (e) {
+                    console.error("Erro ao registar clique:", e);
+                }
+
+                salvarHistoricoRecente(curso);
+                window.location.href = `aula.html?list=${curso.playlist_id}`;
+            });
+
+            return card;
+        }
+
+        // --- 3. RENDERIZAR MAIS PROCURADOS ---
+        function renderizarMaisProcurados(cursos) {
+            if (!containerMaisProcurados) return;
+            // Ordena decrescente por cliques e limita aos 6 mais populares
+            const populares = [...cursos].sort((a, b) => b.cliques - a.cliques).slice(0, 6);
+            
+            containerMaisProcurados.innerHTML = "";
+            populares.forEach((curso) => {
+                const card = criarCardCurso(curso);
+                containerMaisProcurados.appendChild(card);
+            });
+        }
+
+        // --- 4. SISTEMA DE HISTÓRICO RECENTE ---
+        function salvarHistoricoRecente(curso) {
+            let historico = JSON.parse(localStorage.getItem("pathstudy_historico")) || [];
+            const cursoId = curso.id || curso.ID;
+            
+            historico = historico.filter((c) => (c.id || c.ID) !== cursoId);
+            historico.unshift(curso);
+            
+            if (historico.length > 5) historico.pop();
+            localStorage.setItem("pathstudy_historico", JSON.stringify(historico));
+        }
+
+        function renderizarHistoricoRecentes() {
+            if (!containerRecentes) return;
+            const historico = JSON.parse(localStorage.getItem("pathstudy_historico")) || [];
+            containerRecentes.innerHTML = "";
+
+            if (historico.length === 0) {
+                containerRecentes.innerHTML = '<p style="font-size: 12px; color: #666; padding: 10px;">Ainda não visualizaste nenhum curso recentemente.</p>';
+                return;
             }
 
-            // 2. Lógica nova para o botão de SAIR do menu
-            const linkSair = document.querySelector('#link-sair');
-            if (linkSair) {
-                linkSair.addEventListener('click', (e) => {
-                    e.preventDefault(); // Impede o link de seguir o '#' vazio
-                    
-                    // Apaga os dados do usuário do navegador
-                    localStorage.removeItem('usuarioLogado');
-                    
-                    // Redireciona para a página inicial (index.html)
-                    window.location.href = 'index.html';
+            historico.forEach((curso) => {
+                const card = criarCardCurso(curso);
+                containerRecentes.appendChild(card);
+            });
+        }
+
+        // --- 5. BARRA DE PESQUISA FUNCIONAL ---
+        if (inputPesquisa) {
+            inputPesquisa.addEventListener("input", (e) => {
+                const termo = e.target.value.toLowerCase();
+                const filtrados = todosOsCursos.filter((c) =>
+                    c.titulo.toLowerCase().includes(termo)
+                );
+
+                if (!containerMaisProcurados) return;
+                containerMaisProcurados.innerHTML = "";
+
+                if (filtrados.length === 0) {
+                    containerMaisProcurados.innerHTML = '<p style="color: #666; padding: 10px;">Nenhum curso encontrado.</p>';
+                    return;
+                }
+
+                filtrados.forEach((curso) => {
+                    containerMaisProcurados.appendChild(criarCardCurso(curso));
+                });
+            });
+        }
+
+        // --- 6. CONTROLO DAS SETAS DOS CARROSSÉIS ---
+        document.querySelectorAll(".carousel").forEach((carousel) => {
+            const container = carousel.querySelector('div[id^="container-"]');
+            const setas = carousel.querySelectorAll(".arrow");
+
+            if (setas.length === 2 && container) {
+                setas[0].addEventListener("click", () => {
+                    container.scrollBy({ left: -300, behavior: "smooth" });
+                });
+                setas[1].addEventListener("click", () => {
+                    container.scrollBy({ left: 300, behavior: "smooth" });
                 });
             }
         });
-    </script>
+
+        // --- 7. LÓGICA DO BOTÃO SAIR ---
+        const linkSair = document.querySelector("#link-sair");
+        if (linkSair) {
+            linkSair.addEventListener("click", (e) => {
+                e.preventDefault();
+                localStorage.removeItem("usuarioLogado");
+                window.location.href = "index.html";
+            });
+        }
+    });
+</script>
   </body>
 </html>
