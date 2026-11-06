@@ -51,4 +51,4 @@ UPDATE cursos
 SET imagem = 'https://i.pinimg.com/736x/fd/0a/88/fd0a883bd6f2fa6607ebe58fd7d30e60.jpg'
 WHERE id_curso = 1;   
 INSERT INTO cursos (titulo, playlist_id, cliques, categoria) 
-VALUES ('Curso de Português', 'PLToTKj2C0mWDJowVTjT0FWL14dhXOVP9p', 0, 'Linguagens');
+VALUES ('Curso de Educação', 'PLNM2T4DNzmq7k4Bir7DlsfNixlGfSATLz', 0, 'Humanas');

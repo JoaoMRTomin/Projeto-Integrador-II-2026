@@ -166,7 +166,7 @@
         function renderizarMaisProcurados(cursos) {
             if (!containerMaisProcurados) return;
             // Ordena decrescente por cliques e limita aos 6 mais populares
-            const populares = [...cursos].sort((a, b) => b.cliques - a.cliques).slice(0, 6);
+            const populares = [...cursos].sort((a, b) => b.cliques - a.cliques);
             
             containerMaisProcurados.innerHTML = "";
             populares.forEach((curso) => {
