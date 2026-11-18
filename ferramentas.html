@@ -3,32 +3,502 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PathStudy - Ferramentas</title>
+    <title>PathStudy - Ferramentas de Foco</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+      .tools-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+      }
+      .tool-card {
+        background: #2b3035;
+        color: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition:
+          transform 0.2s,
+          background 0.2s;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      }
+      .tool-card:hover {
+        transform: translateY(-5px);
+        background: #343a40;
+      }
+      .tool-card h3 {
+        margin-bottom: 10px;
+        color: #28a745;
+      }
+      .tool-card p {
+        font-size: 13px;
+        color: #aaa;
+      }
+
+      /* Widget Pomodoro */
+      #pathstudy-pomodoro-widget {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #212529;
+        color: #fff;
+        padding: 10px 16px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+        z-index: 99998;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: sans-serif;
+        border: 1px solid #343a40;
+      }
+      #pomodoro-mini-timer {
+        font-size: 20px;
+        font-weight: bold;
+        color: #28a745;
+        font-family: monospace;
+      }
+      .pomodoro-btn {
+        background: #28a745;
+        border: none;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 12px;
+        transition: background 0.2s;
+      }
+      .pomodoro-btn:hover {
+        background: #218838;
+      }
+      .pomodoro-btn-secondary {
+        background: #495057;
+        border: none;
+        color: #fff;
+        padding: 6px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+      .pomodoro-btn-secondary:hover {
+        background: #343a40;
+      }
+
+      /* Super Pop-up */
+      #pathstudy-super-popup {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 100000;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+      }
+      .super-popup-content {
+        background: #1e2124;
+        padding: 50px 40px;
+        border-radius: 16px;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+        border: 2px solid #28a745;
+      }
+
+      /* Modo Zen Global & Menu Flutuante */
+      body.pathstudy-zen-ativo header,
+      body.pathstudy-zen-ativo footer,
+      body.pathstudy-zen-ativo .blue-wave {
+        display: none !important;
+      }
+      body.pathstudy-zen-ativo {
+        background: #121212 !important;
+        color: #fff !important;
+      }
+
+      #zen-floating-nav {
+        display: none;
+        position: fixed;
+        top: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1e2124;
+        padding: 10px 20px;
+        border-radius: 30px;
+        z-index: 99999;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+        border: 1px solid #333;
+        align-items: center;
+        gap: 15px;
+      }
+      #zen-floating-nav a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: bold;
+        transition: color 0.2s;
+      }
+      #zen-floating-nav a:hover {
+        color: #28a745;
+      }
+      .btn-sair-zen-mini {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .btn-sair-zen-mini:hover {
+        background: #c82333;
+      }
+    </style>
   </head>
   <body>
-    <div class="dash-top">
+    <header class="dash-top">
       <h1 class="dash-logo">PathStudy</h1>
       <div class="green-line"></div>
       <div class="dash-header">
-
+        <span class="welcome" id="nome-usuario">Ferramentas</span>
         <div class="dropdown">
-          <button class="botao-menu">☰</button>
-
+          <div class="menu-icon">☰</div>
           <div class="conteudo-dropdown">
-            <a href="discplinas.html">Discplinas</a>
-            <a href="grupos.html">Grupos</a>
+            <a href="index.html">Início</a>
+            <a href="dashboard.html">Painel</a>
             <a href="ferramentas.html">Ferramentas</a>
-            <a href="contato.html">Ajuda</a>
+            <a href="contato.html">Contato</a>
+            <a href="#" id="link-sair">Sair</a>
           </div>
         </div>
       </div>
+    </header>
+
+    <!-- Menu Flutuante ativo apenas no Modo Zen -->
+    <div id="zen-floating-nav">
+      <a href="index.html">Início</a>
+      <a href="dashboard.html">Painel</a>
+      <a href="ferramentas.html">Ferramentas</a>
+      <button class="btn-sair-zen-mini" id="btn-sair-zen-global">
+        Desativar
+      </button>
     </div>
 
-    <main></main>
+    <main class="dashboard-main">
+      <div class="blue-wave"></div>
+      <h2 style="text-align: center; color: #fff; margin-top: 20px">
+        Área de Produtividade
+      </h2>
+
+      <div class="tools-container">
+        <div class="tool-card">
+          <h3>⏱️ Técnica Pomodoro</h3>
+          <p>
+            O cronómetro inteligente está sempre ativo no canto inferior direito
+            para gerir o teu foco em qualquer página.
+          </p>
+        </div>
+
+        <div class="tool-card" id="activate-zen">
+          <h3>🧘 Modo Escuro</h3>
+          <p>
+            Clica aqui para ativar o ecrã completo focado, o menu superior de
+            navegação e ocultar distrações em todo o site.
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Widget Pomodoro -->
+    <div id="pathstudy-pomodoro-widget">
+      <span id="pomodoro-mini-timer">25:00</span>
+      <button class="pomodoro-btn" id="pomodoro-mini-toggle">Iniciar</button>
+      <button
+        class="pomodoro-btn-secondary"
+        id="pomodoro-mini-reset"
+        title="Reiniciar"
+      >
+        🔄
+      </button>
+    </div>
+
+    <!-- Super Pop-up -->
+    <div id="pathstudy-super-popup">
+      <div class="super-popup-content">
+        <h2 style="color: #28a745; font-size: 26px; margin-bottom: 20px">
+          ⏱️ Pomodoro Concluído!
+        </h2>
+        <p
+          style="
+            color: #fff;
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+          "
+        >
+          Seção concluída. Descanse rapidamente e volte daqui a pouco.
+        </p>
+        <button
+          class="pomodoro-btn"
+          id="fechar-super-popup"
+          style="padding: 12px 30px; font-size: 15px"
+        >
+          Entendido
+        </button>
+      </div>
+    </div>
 
     <footer class="bottom-bar">
       <p>© 2026 Tomin & Metring</p>
     </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const timerDisplay = document.getElementById("pomodoro-mini-timer");
+        const toggleBtn = document.getElementById("pomodoro-mini-toggle");
+        const resetBtn = document.getElementById("pomodoro-mini-reset");
+        const superPopup = document.getElementById("pathstudy-super-popup");
+        const fecharPopupBtn = document.getElementById("fechar-super-popup");
+        const TEMPO_PADRAO = 25 * 60;
+
+        function obterEstadoPomodoro() {
+          return (
+            JSON.parse(localStorage.getItem("pathstudy_pomodoro")) || {
+              fim: null,
+              duracao: TEMPO_PADRAO,
+              ativo: false,
+            }
+          );
+        }
+        function salvarEstadoPomodoro(estado) {
+          localStorage.setItem("pathstudy_pomodoro", JSON.stringify(estado));
+        }
+
+        function atualizarRelogioGlobal() {
+          let estado = obterEstadoPomodoro();
+          if (!estado.ativo || !estado.fim) {
+            const m = Math.floor(estado.duracao / 60),
+              s = estado.duracao % 60;
+            if (timerDisplay)
+              timerDisplay.textContent = `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+            if (toggleBtn) toggleBtn.textContent = "Iniciar";
+            return;
+          }
+          const segundosRestantes = Math.max(
+            0,
+            Math.round((estado.fim - Date.now()) / 1000),
+          );
+          const m = Math.floor(segundosRestantes / 60),
+            s = segundosRestantes % 60;
+          if (timerDisplay)
+            timerDisplay.textContent = `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+          if (toggleBtn) toggleBtn.textContent = "Pausar";
+
+          if (segundosRestantes <= 0) {
+            salvarEstadoPomodoro({
+              fim: null,
+              duracao: TEMPO_PADRAO,
+              ativo: false,
+            });
+            if (superPopup) superPopup.style.display = "flex";
+            atualizarRelogioGlobal();
+          }
+        }
+
+        setInterval(atualizarRelogioGlobal, 1000);
+        atualizarRelogioGlobal();
+
+        if (toggleBtn) {
+          toggleBtn.addEventListener("click", () => {
+            let estado = obterEstadoPomodoro();
+            if (estado.ativo) {
+              salvarEstadoPomodoro({
+                fim: null,
+                duracao: TEMPO_PADRAO,
+                ativo: false,
+              });
+            } else {
+              salvarEstadoPomodoro({
+                fim: Date.now() + estado.duracao * 1000,
+                duracao: estado.duracao,
+                ativo: true,
+              });
+            }
+            atualizarRelogioGlobal();
+          });
+        }
+
+        if (resetBtn) {
+          resetBtn.addEventListener("click", () => {
+            salvarEstadoPomodoro({
+              fim: null,
+              duracao: TEMPO_PADRAO,
+              ativo: false,
+            });
+            atualizarRelogioGlobal();
+          });
+        }
+
+        if (fecharPopupBtn && superPopup) {
+          fecharPopupBtn.addEventListener("click", () => {
+            superPopup.style.display = "none";
+          });
+        }
+
+        // Modo Zen & Menu Flutuante
+        const zenBtn = document.getElementById("activate-zen");
+        const zenNav = document.getElementById("zen-floating-nav");
+        const btnSairZen = document.getElementById("btn-sair-zen-global");
+
+        function aplicarModoZen(ativo) {
+          if (ativo) {
+            document.body.classList.add("pathstudy-zen-ativo");
+            if (zenNav) zenNav.style.display = "flex";
+          } else {
+            document.body.classList.remove("pathstudy-zen-ativo");
+            if (zenNav) zenNav.style.display = "none";
+          }
+        }
+
+        if (localStorage.getItem("pathstudy_zen") === "true") {
+          aplicarModoZen(true);
+        }
+
+        if (zenBtn) {
+          zenBtn.addEventListener("click", () => {
+            localStorage.setItem("pathstudy_zen", "true");
+            aplicarModoZen(true);
+            if (document.documentElement.requestFullscreen) {
+              document.documentElement.requestFullscreen().catch(() => {});
+            }
+          });
+        }
+
+        document.addEventListener(
+          "click",
+          () => {
+            if (
+              localStorage.getItem("pathstudy_zen") === "true" &&
+              !document.fullscreenElement
+            ) {
+              document.documentElement.requestFullscreen().catch(() => {});
+            }
+          },
+          { once: true },
+        );
+
+        if (btnSairZen) {
+          btnSairZen.addEventListener("click", () => {
+            localStorage.setItem("pathstudy_zen", "false");
+            aplicarModoZen(false);
+            if (document.fullscreenElement)
+              document.exitFullscreen().catch(() => {});
+          });
+        }
+
+        const linkSair = document.querySelector("#link-sair");
+        if (linkSair) {
+          linkSair.addEventListener("click", (e) => {
+            e.preventDefault();
+            localStorage.removeItem("usuarioLogado");
+            window.location.href = "index.html";
+          });
+        }
+      });
+
+      // --- FUNCIONALIDADE DE ARRASTAR O WIDGET DO POMODORO ---
+      const pomodoroWidget = document.getElementById(
+        "pathstudy-pomodoro-widget",
+      );
+
+      if (pomodoroWidget) {
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+
+        pomodoroWidget.addEventListener("mousedown", (e) => {
+          // Evita arrastar se o utilizador clicar nos botões de iniciar/reiniciar
+          if (e.target.tagName === "BUTTON") return;
+
+          isDragging = true;
+          pomodoroWidget.style.cursor = "grabbing";
+
+          // Posição inicial do rato e do elemento
+          startX = e.clientX;
+          startY = e.clientY;
+
+          const rect = pomodoroWidget.getBoundingClientRect();
+          initialLeft = rect.left;
+          initialTop = rect.top;
+
+          // Troca posições relativas (bottom/right) por absolutas (left/top) para permitir movimento livre
+          pomodoroWidget.style.bottom = "auto";
+          pomodoroWidget.style.right = "auto";
+          pomodoroWidget.style.left = `${initialLeft}px`;
+          pomodoroWidget.style.top = `${initialTop}px`;
+
+          e.preventDefault();
+        });
+
+        document.addEventListener("mousemove", (e) => {
+          if (!isDragging) return;
+
+          const dx = e.clientX - startX;
+          const dy = e.clientY - startY;
+
+          pomodoroWidget.style.left = `${initialLeft + dx}px`;
+          pomodoroWidget.style.top = `${initialTop + dy}px`;
+        });
+
+        document.addEventListener("mouseup", () => {
+          if (isDragging) {
+            isDragging = false;
+            pomodoroWidget.style.cursor = "default";
+          }
+        });
+
+        // Suporte opcional para dispositivos tácteis (Telemóveis / Tablets)
+        pomodoroWidget.addEventListener("touchstart", (e) => {
+          if (e.target.tagName === "BUTTON") return;
+          const touch = e.touches[0];
+          isDragging = true;
+
+          startX = touch.clientX;
+          startY = touch.clientY;
+
+          const rect = pomodoroWidget.getBoundingClientRect();
+          initialLeft = rect.left;
+          initialTop = rect.top;
+
+          pomodoroWidget.style.bottom = "auto";
+          pomodoroWidget.style.right = "auto";
+          pomodoroWidget.style.left = `${initialLeft}px`;
+          pomodoroWidget.style.top = `${initialTop}px`;
+        });
+
+        document.addEventListener("touchmove", (e) => {
+          if (!isDragging) return;
+          const touch = e.touches[0];
+          const dx = touch.clientX - startX;
+          const dy = touch.clientY - startY;
+
+          pomodoroWidget.style.left = `${initialLeft + dx}px`;
+          pomodoroWidget.style.top = `${initialTop + dy}px`;
+        });
+
+        document.addEventListener("touchend", () => {
+          isDragging = false;
+        });
+      }
+    </script>
   </body>
 </html>

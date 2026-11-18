@@ -48,7 +48,7 @@ CREATE TABLE progresso_usuario (
 SELECT * from cursos;
 
 UPDATE cursos
-SET imagem = 'https://i.pinimg.com/736x/fd/0a/88/fd0a883bd6f2fa6607ebe58fd7d30e60.jpg'
-WHERE id_curso = 1;   
+SET imagem = 'https://i.pinimg.com/1200x/86/a1/cc/86a1cc4b2eba3c3e7e1a7150ce83c512.jpg'
+WHERE id_curso = 20;
 INSERT INTO cursos (titulo, playlist_id, cliques, categoria) 
 VALUES ('Curso de Educação', 'PLNM2T4DNzmq7k4Bir7DlsfNixlGfSATLz', 0, 'Humanas');

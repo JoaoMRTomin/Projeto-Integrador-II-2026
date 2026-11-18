@@ -1,255 +1,460 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PathStudy - Painel</title>
     <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header class="dash-top">
-      <h1 class="dash-logo">PathStudy</h1>
-      <div class="green-line"></div>
-      <div class="dash-header">
-        <span class="welcome" id="nome-usuario">Bem-vindo!</span>
+    <style>
+        /* Estilos Globais do Sistema de Foco (Pomodoro & Zen) */
+        #pathstudy-pomodoro-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #212529;
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            z-index: 99998;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: sans-serif;
+            border: 1px solid #343a40;
+        }
+        #pomodoro-mini-timer {
+            font-size: 20px;
+            font-weight: bold;
+            color: #28a745;
+            font-family: monospace;
+        }
+        .pomodoro-btn {
+            background: #28a745;
+            border: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+        .pomodoro-btn:hover { background: #218838; }
+        .pomodoro-btn-secondary {
+            background: #495057;
+            border: none;
+            color: #fff;
+            padding: 6px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .pomodoro-btn-secondary:hover { background: #343a40; }
 
-        <div class="search-bar">
-          <input type="text" placeholder="Pesquisar" />
+        /* Super Pop-up de Conclusão */
+        #pathstudy-super-popup {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 100000;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .super-popup-content {
+            background: #1e2124;
+            padding: 50px 40px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+            border: 2px solid #28a745;
+        }
+
+        /* Modo Zen Global & Menu Flutuante */
+        body.pathstudy-zen-ativo header, 
+        body.pathstudy-zen-ativo footer, 
+        body.pathstudy-zen-ativo .blue-wave {
+            display: none !important;
+        }
+        body.pathstudy-zen-ativo {
+            background: #121212 !important;
+            color: #fff !important;
+        }
+        
+        #zen-floating-nav {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e2124;
+            padding: 10px 20px;
+            border-radius: 30px;
+            z-index: 99999;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+            border: 1px solid #333;
+            align-items: center;
+            gap: 15px;
+        }
+        #zen-floating-nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+        #zen-floating-nav a:hover { color: #28a745; }
+        .btn-sair-zen-mini {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-sair-zen-mini:hover { background: #c82333; }
+
+        /* Estilo dos Carrosséis com Setas */
+        .carousel-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .carousel-container {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding-bottom: 10px;
+            width: 100%;
+            scrollbar-width: none; /* Firefox */
+        }
+        .carousel-container::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(33, 37, 41, 0.9);
+            color: white;
+            border: 1px solid #444;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .carousel-arrow:hover {
+            background: #28a745;
+            transform: translateY(-50%) scale(1.1);
+        }
+        .prev-arrow { left: -22px; }
+        .next-arrow { right: -22px; }
+    </style>
+</head>
+<body>
+    <header class="dash-top">
+        <h1 class="dash-logo">PathStudy</h1>
+        <div class="green-line"></div>
+        <div class="dash-header">
+            <span class="welcome" id="nome-usuario">Bem-vindo!</span>
+            <div class="dropdown">
+                <div class="menu-icon">☰</div>
+                <div class="conteudo-dropdown">
+                    <a href="index.html">Início</a>
+                    <a href="dashboard.html">Painel</a>
+                    <a href="ferramentas.html">Ferramentas</a>
+                    <a href="contato.html">Contato</a>
+                    <a href="#" id="link-sair">Sair</a>
+                </div>
+            </div>
         </div>
-        <div class="dropdown">
-          <div class="menu-icon">☰</div>
-          <div class="conteudo-dropdown">
-            <a href="index.html">Início</a>
-            <a href="dashboard.html">Painel</a>
-            <a href="grupos.html">Grupos</a>
-            <a href="contato.html">Contato</a>
-            <a href="#" id="link-sair">Sair</a>
-          </div>
-        </div>
-      </div>
     </header>
 
+    <!-- Menu Flutuante ativo apenas no Modo Zen -->
+    <div id="zen-floating-nav">
+        <a href="index.html">Início</a>
+        <a href="dashboard.html">Painel</a>
+        <a href="ferramentas.html">Ferramentas</a>
+        <button class="btn-sair-zen-mini" id="btn-sair-zen-global">Desativar</button>
+    </div>
+
     <main class="dashboard-main">
-      <div class="blue-wave"></div>
-
-      <!-- Seção Mais Procurados -->
-      <section>
-        <h3 class="title-center">Mais procurados:</h3>
-        <div class="carousel">
-          <span class="arrow">←</span>
-          <div
-            id="container-mais-procurados"
-            style="
-              display: flex;
-              gap: 20px;
-              overflow-x: auto;
-              flex-wrap: nowrap;
-              width: 100%;
-              padding-bottom: 10px;
-            "
-          >
-            <!-- Os cards entram aqui automaticamente via JS -->
-          </div>
-          <span class="arrow">→</span>
+        <div class="blue-wave"></div>
+        
+        <!-- Barra de Pesquisa -->
+        <div style="max-width: 600px; margin: 20px auto; padding: 0 20px;">
+            <input type="search" placeholder="Pesquisar cursos..." style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #212529; color: #fff;" />
         </div>
-      </section>
 
-      <div class="blue-wave"></div>
+        <!-- Secção: Mais Procurados -->
+        <section style="max-width: 1000px; margin: 30px auto; padding: 0 20px;">
+            <h3 style="color: #000000; margin-bottom: 15px;">🔥 Mais Procurados</h3>
+            <div class="carousel-wrapper">
+                <button class="carousel-arrow prev-arrow" onclick="rolarCarrossel('container-mais-procurados', -300)">❮</button>
+                <div id="container-mais-procurados" class="carousel-container">
+                    <!-- Preenchido via JavaScript -->
+                </div>
+                <button class="carousel-arrow next-arrow" onclick="rolarCarrossel('container-mais-procurados', 300)">❯</button>
+            </div>
+        </section>
 
-      <!-- Secção Cursos Recentes (Histórico) -->
-      <section>
-        <h3 class="title-left">Cursos Recentes ➔</h3>
-        <div class="carousel carousel-left">
-          <div
-            id="container-recentes"
-            style="
-              display: flex;
-              gap: 20px;
-              overflow-x: auto;
-              flex-wrap: nowrap;
-              width: 100%;
-              padding-bottom: 10px;
-            "
-          >
-            <!-- O histórico recente entra aqui automaticamente via JS -->
-          </div>
-        </div>
-      </section>
+        <!-- Secção: Histórico Recente -->
+        <section style="max-width: 1000px; margin: 30px auto; padding: 0 20px;">
+            <h3 style="color: #000000; margin-bottom: 15px;">🕒 Visualizados Recentemente</h3>
+            <div class="carousel-wrapper">
+                <button class="carousel-arrow prev-arrow" onclick="rolarCarrossel('container-recentes', -300)">❮</button>
+                <div id="container-recentes" class="carousel-container">
+                    <!-- Preenchido via JavaScript -->
+                </div>
+                <button class="carousel-arrow next-arrow" onclick="rolarCarrossel('container-recentes', 300)">❯</button>
+            </div>
+        </section>
     </main>
 
+    <!-- Widget Flutuante do Pomodoro -->
+    <div id="pathstudy-pomodoro-widget">
+        <span id="pomodoro-mini-timer">25:00</span>
+        <button class="pomodoro-btn" id="pomodoro-mini-toggle">Iniciar</button>
+        <button class="pomodoro-btn-secondary" id="pomodoro-mini-reset" title="Reiniciar">🔄</button>
+    </div>
+
+    <!-- Super Pop-up de Conclusão -->
+    <div id="pathstudy-super-popup">
+        <div class="super-popup-content">
+            <h2 style="color: #28a745; font-size: 26px; margin-bottom: 20px;">⏱️ Pomodoro Concluído!</h2>
+            <p style="color: #fff; font-size: 18px; line-height: 1.5; margin-bottom: 30px;">Seção concluída. Descanse rapidamente e volte daqui a pouco.</p>
+            <button class="pomodoro-btn" id="fechar-super-popup" style="padding: 12px 30px; font-size: 15px;">Entendido</button>
+        </div>
+    </div>
+
     <footer class="bottom-bar">
-      <p>© 2026 Tomin & Metring</p>
+        <p>© 2026 Tomin & Metring</p>
     </footer>
-    <!-- JS pro "bem vindo" e Método de cliques-->
- <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-        // 1. Carrega o nome do usuário no topo e valida a sessão
-        const dadosUsuario = localStorage.getItem("usuarioLogado");
-        const spanWelcome = document.querySelector("#nome-usuario");
 
-        if (dadosUsuario) {
-            const usuario = JSON.parse(dadosUsuario);
-            const primeiroNome = usuario.nome.split(" ")[0];
-            if (spanWelcome) {
-                spanWelcome.textContent = `Bem-vindo, ${primeiroNome}!`;
+    <script>
+        // Função para mover o carrossel com as setas
+        function rolarCarrossel(idContainer, deslocamento) {
+            const container = document.getElementById(idContainer);
+            if (container) {
+                container.scrollBy({ left: deslocamento, behavior: 'smooth' });
             }
-        } else {
-            window.location.href = "login.html";
-            return;
         }
 
-        // Elementos principais do DOM
-        const containerMaisProcurados = document.getElementById("container-mais-procurados");
-        const containerRecentes = document.getElementById("container-recentes");
-        const inputPesquisa = document.querySelector('input[type="search"]');
+        document.addEventListener("DOMContentLoaded", async () => {
+            // 1. Validação de Sessão e Nome
+            const dadosUsuario = localStorage.getItem("usuarioLogado");
+            const spanWelcome = document.querySelector("#nome-usuario");
 
-        let todosOsCursos = [];
-
-        // 2. Busca todos os cursos no backend Flask (Porta 5000)
-        try {
-            const response = await fetch("http://127.0.0.1:5000/api/cursos");
-            if (!response.ok) {
-                throw new Error("Erro ao buscar cursos na API");
-            }
-            todosOsCursos = await response.json();
-
-            if (todosOsCursos.length > 0) {
-                renderizarMaisProcurados(todosOsCursos);
-                renderizarHistoricoRecentes();
+            if (dadosUsuario) {
+                const usuario = JSON.parse(dadosUsuario);
+                const primeiroNome = usuario.nome.split(" ")[0];
+                if (spanWelcome) spanWelcome.textContent = `Bem-vindo, ${primeiroNome}!`;
             } else {
-                if (containerMaisProcurados) {
-                    containerMaisProcurados.innerHTML = '<p style="color: #777; font-size: 13px;">Nenhum curso cadastrado ainda.</p>';
-                }
-            }
-        } catch (error) {
-            console.error("Erro ao carregar cursos:", error);
-            if (containerMaisProcurados) {
-                containerMaisProcurados.innerHTML = '<p style="color: #ef4444; font-size: 13px;">Erro ao conectar com o servidor.</p>';
-            }
-        }
-
-        // --- FUNÇÃO AUXILIAR: CRIAR CARD DE CURSO ---
-        function criarCardCurso(curso) {
-            const card = document.createElement("div");
-            card.className = "card-curso";
-            card.style.cssText = "min-width: 220px; max-width: 220px; background: #222; color: #fff; border-radius: 8px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; flex-shrink: 0;";
-
-            const imgCapa = curso.imagem || "https://via.placeholder.com/220x120";
-            const cursoId = curso.id || curso.ID;
-
-            card.innerHTML = `
-                <img src="${imgCapa}" style="width: 100%; height: 120px; object-fit: cover;" alt="${curso.titulo}">
-                <div style="padding: 12px;">
-                    <h4 style="font-size: 14px; margin: 0 0 8px 0; color: #fff;">${curso.titulo}</h4>
-                    <span style="font-size: 11px; color: #28a745;">▶ Assistir ao curso</span>
-                </div>
-            `;
-
-            // Evento de clique: regista o clique no MySQL e guarda no histórico
-            card.addEventListener("click", async () => {
-                try {
-                    await fetch(`http://127.0.0.1:5000/api/curso/${cursoId}/clique`, {
-                        method: "POST",
-                    });
-                } catch (e) {
-                    console.error("Erro ao registar clique:", e);
-                }
-
-                salvarHistoricoRecente(curso);
-                window.location.href = `aula.html?list=${curso.playlist_id}`;
-            });
-
-            return card;
-        }
-
-        // --- 3. RENDERIZAR MAIS PROCURADOS ---
-        function renderizarMaisProcurados(cursos) {
-            if (!containerMaisProcurados) return;
-            // Ordena decrescente por cliques e limita aos 6 mais populares
-            const populares = [...cursos].sort((a, b) => b.cliques - a.cliques);
-            
-            containerMaisProcurados.innerHTML = "";
-            populares.forEach((curso) => {
-                const card = criarCardCurso(curso);
-                containerMaisProcurados.appendChild(card);
-            });
-        }
-
-        // --- 4. SISTEMA DE HISTÓRICO RECENTE ---
-        function salvarHistoricoRecente(curso) {
-            let historico = JSON.parse(localStorage.getItem("pathstudy_historico")) || [];
-            const cursoId = curso.id || curso.ID;
-            
-            historico = historico.filter((c) => (c.id || c.ID) !== cursoId);
-            historico.unshift(curso);
-            
-            if (historico.length > 5) historico.pop();
-            localStorage.setItem("pathstudy_historico", JSON.stringify(historico));
-        }
-
-        function renderizarHistoricoRecentes() {
-            if (!containerRecentes) return;
-            const historico = JSON.parse(localStorage.getItem("pathstudy_historico")) || [];
-            containerRecentes.innerHTML = "";
-
-            if (historico.length === 0) {
-                containerRecentes.innerHTML = '<p style="font-size: 12px; color: #666; padding: 10px;">Ainda não visualizaste nenhum curso recentemente.</p>';
+                window.location.href = "login.html";
                 return;
             }
 
-            historico.forEach((curso) => {
-                const card = criarCardCurso(curso);
-                containerRecentes.appendChild(card);
-            });
-        }
+            // 2. Elementos dos Cursos
+            const containerMaisProcurados = document.getElementById("container-mais-procurados");
+            const containerRecentes = document.getElementById("container-recentes");
+            const inputPesquisa = document.querySelector('input[type="search"]');
+            let todosOsCursos = [];
 
-        // --- 5. BARRA DE PESQUISA FUNCIONAL ---
-        if (inputPesquisa) {
-            inputPesquisa.addEventListener("input", (e) => {
-                const termo = e.target.value.toLowerCase();
-                const filtrados = todosOsCursos.filter((c) =>
-                    c.titulo.toLowerCase().includes(termo)
-                );
+            try {
+                const response = await fetch("http://127.0.0.1:5000/api/cursos");
+                if (response.ok) {
+                    todosOsCursos = await response.json();
+                    renderizarMaisProcurados(todosOsCursos);
+                    renderizarHistoricoRecentes();
+                }
+            } catch (err) {
+                console.error("Erro ao carregar cursos:", err);
+            }
 
+            function criarCardCurso(curso) {
+                const card = document.createElement("div");
+                card.className = "card-curso";
+                card.style.cssText = "min-width: 220px; max-width: 220px; background: #222; color: #fff; border-radius: 8px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; flex-shrink: 0;";
+
+                const imgCapa = curso.imagem || "https://via.placeholder.com/220x120";
+                const cursoId = curso.id || curso.ID;
+
+                card.innerHTML = `
+                    <img src="${imgCapa}" style="width: 100%; height: 120px; object-fit: cover;" alt="${curso.titulo}">
+                    <div style="padding: 12px;">
+                        <h4 style="font-size: 14px; margin: 0 0 8px 0; color: #fff;">${curso.titulo}</h4>
+                        <span style="font-size: 11px; color: #28a745;">▶ Aceder ao curso</span>
+                    </div>
+                `;
+
+                card.addEventListener("click", async () => {
+                    try {
+                        await fetch(`http://127.0.0.1:5000/api/curso/${cursoId}/clique`, { method: "POST" });
+                    } catch (e) {
+                        console.error("Erro clique:", e);
+                    }
+                    salvarHistoricoRecente(curso);
+                    window.location.href = `aula.html?list=${curso.playlist_id}`;
+                });
+
+                return card;
+            }
+
+            function renderizarMaisProcurados(cursos) {
                 if (!containerMaisProcurados) return;
+                const populares = [...cursos].sort((a, b) => b.cliques - a.cliques);
                 containerMaisProcurados.innerHTML = "";
+                populares.forEach(curso => containerMaisProcurados.appendChild(criarCardCurso(curso)));
+            }
 
-                if (filtrados.length === 0) {
-                    containerMaisProcurados.innerHTML = '<p style="color: #666; padding: 10px;">Nenhum curso encontrado.</p>';
+            function salvarHistoricoRecente(curso) {
+                let historico = JSON.parse(localStorage.getItem("pathstudy_historico")) || [];
+                historico = historico.filter(c => c.playlist_id !== curso.playlist_id);
+                historico.unshift(curso);
+                if (historico.length > 6) historico.pop();
+                localStorage.setItem("pathstudy_historico", JSON.stringify(historico));
+            }
+
+            function renderizarHistoricoRecentes() {
+                if (!containerRecentes) return;
+                const historico = JSON.parse(localStorage.getItem("pathstudy_historico")) || [];
+                containerRecentes.innerHTML = "";
+                if (historico.length === 0) {
+                    containerRecentes.innerHTML = '<p style="font-size: 12px; color: #666; padding: 10px;">Ainda não visualizaste nenhum curso.</p>';
                     return;
                 }
+                historico.forEach(curso => containerRecentes.appendChild(criarCardCurso(curso)));
+            }
 
-                filtrados.forEach((curso) => {
-                    containerMaisProcurados.appendChild(criarCardCurso(curso));
+            if (inputPesquisa) {
+                inputPesquisa.addEventListener("input", (e) => {
+                    const termo = e.target.value.toLowerCase();
+                    const filtrados = todosOsCursos.filter(c => c.titulo.toLowerCase().includes(termo));
+                    if (!containerMaisProcurados) return;
+                    containerMaisProcurados.innerHTML = "";
+                    if (filtrados.length === 0) {
+                        containerMaisProcurados.innerHTML = '<p style="color: #666; padding: 10px;">Nenhum curso encontrado.</p>';
+                        return;
+                    }
+                    filtrados.forEach(curso => containerMaisProcurados.appendChild(criarCardCurso(curso)));
                 });
-            });
-        }
+            }
 
-        // --- 6. CONTROLO DAS SETAS DOS CARROSSÉIS ---
-        document.querySelectorAll(".carousel").forEach((carousel) => {
-            const container = carousel.querySelector('div[id^="container-"]');
-            const setas = carousel.querySelectorAll(".arrow");
+            // 3. Lógica Global Pomodoro
+            const timerDisplay = document.getElementById('pomodoro-mini-timer');
+            const toggleBtn = document.getElementById('pomodoro-mini-toggle');
+            const resetBtn = document.getElementById('pomodoro-mini-reset');
+            const superPopup = document.getElementById('pathstudy-super-popup');
+            const fecharPopupBtn = document.getElementById('fechar-super-popup');
+            const TEMPO_PADRAO = 25 * 60;
 
-            if (setas.length === 2 && container) {
-                setas[0].addEventListener("click", () => {
-                    container.scrollBy({ left: -300, behavior: "smooth" });
+            function obterEstadoPomodoro() {
+                return JSON.parse(localStorage.getItem('pathstudy_pomodoro')) || { fim: null, duracao: TEMPO_PADRAO, ativo: false };
+            }
+            function salvarEstadoPomodoro(estado) {
+                localStorage.setItem('pathstudy_pomodoro', JSON.stringify(estado));
+            }
+
+            function atualizarRelogioGlobal() {
+                let estado = obterEstadoPomodoro();
+                if (!estado.ativo || !estado.fim) {
+                    const m = Math.floor(estado.duracao / 60), s = estado.duracao % 60;
+                    if (timerDisplay) timerDisplay.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                    if (toggleBtn) toggleBtn.textContent = "Iniciar";
+                    return;
+                }
+                const segundosRestantes = Math.max(0, Math.round((estado.fim - Date.now()) / 1000));
+                const m = Math.floor(segundosRestantes / 60), s = segundosRestantes % 60;
+                if (timerDisplay) timerDisplay.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                if (toggleBtn) toggleBtn.textContent = "Pausar";
+
+                if (segundosRestantes <= 0) {
+                    salvarEstadoPomodoro({ fim: null, duracao: TEMPO_PADRAO, ativo: false });
+                    if (superPopup) superPopup.style.display = 'flex';
+                    atualizarRelogioGlobal();
+                }
+            }
+
+            setInterval(atualizarRelogioGlobal, 1000);
+            atualizarRelogioGlobal();
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    let estado = obterEstadoPomodoro();
+                    if (estado.ativo) {
+                        salvarEstadoPomodoro({ fim: null, duracao: TEMPO_PADRAO, ativo: false });
+                    } else {
+                        salvarEstadoPomodoro({ fim: Date.now() + (estado.duracao * 1000), duracao: estado.duracao, ativo: true });
+                    }
+                    atualizarRelogioGlobal();
                 });
-                setas[1].addEventListener("click", () => {
-                    container.scrollBy({ left: 300, behavior: "smooth" });
+            }
+
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    salvarEstadoPomodoro({ fim: null, duracao: TEMPO_PADRAO, ativo: false });
+                    atualizarRelogioGlobal();
+                });
+            }
+
+            if (fecharPopupBtn && superPopup) {
+                fecharPopupBtn.addEventListener('click', () => { superPopup.style.display = 'none'; });
+            }
+
+            // 4. Lógica Modo Zen Global
+            const zenNav = document.getElementById('zen-floating-nav');
+            const btnSairZen = document.getElementById('btn-sair-zen-global');
+            function aplicarModoZen(ativo) {
+                if (ativo) {
+                    document.body.classList.add('pathstudy-zen-ativo');
+                    if (zenNav) zenNav.style.display = 'flex';
+                } else {
+                    document.body.classList.remove('pathstudy-zen-ativo');
+                    if (zenNav) zenNav.style.display = 'none';
+                }
+            }
+
+            if (localStorage.getItem('pathstudy_zen') === 'true') {
+                aplicarModoZen(true);
+            }
+
+            document.addEventListener('click', () => {
+                if (localStorage.getItem('pathstudy_zen') === 'true' && !document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                }
+            }, { once: true });
+
+            if (btnSairZen) {
+                btnSairZen.addEventListener('click', () => {
+                    localStorage.setItem('pathstudy_zen', 'false');
+                    aplicarModoZen(false);
+                    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+                });
+            }
+
+            const linkSair = document.querySelector("#link-sair");
+            if (linkSair) {
+                linkSair.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem("usuarioLogado");
+                    window.location.href = "index.html";
                 });
             }
         });
-
-        // --- 7. LÓGICA DO BOTÃO SAIR ---
-        const linkSair = document.querySelector("#link-sair");
-        if (linkSair) {
-            linkSair.addEventListener("click", (e) => {
-                e.preventDefault();
-                localStorage.removeItem("usuarioLogado");
-                window.location.href = "index.html";
-            });
-        }
-    });
-</script>
-  </body>
+    </script>
+</body>
 </html>
